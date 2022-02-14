@@ -23,11 +23,14 @@ export default function Home() {
   async function loadNFTs() {    
     const provider = new ethers.providers.JsonRpcProvider(rpcEndpoint)
     const tokenContract = new ethers.Contract(nftaddress, NFT.abi, provider)
+    console.log(tokenContract);
     const marketContract = new ethers.Contract(nftmarketaddress, Market.abi, provider)
     const data = await marketContract.fetchMarketItem()
     
     const items = await Promise.all(data.map(async i => {
+      console.log('tokenId',i.tokenId);
       const tokenUri = await tokenContract.tokenURI(i.tokenId)
+      console.log(tokenUri);
       const meta = await axios.get(tokenUri)
       let price = ethers.utils.formatUnits(i.price.toString(), 'ether')
       let item = {

@@ -27,7 +27,9 @@ export default function CreateItem() {
           progress: (prog) => console.log(`received: ${prog}`)
         }
       )
+      console.log(added);
       const url = `https://ipfs.infura.io/ipfs/${added.path}`
+      console.log(url);
       setFileUrl(url)
     } catch (error) {
       console.log('Error uploading file: ', error)
@@ -43,6 +45,8 @@ export default function CreateItem() {
     })
     try {
       const added = await client.add(data)
+      console.log('data:-',data);
+      console.log(added)
       const url = `https://ipfs.infura.io/ipfs/${added.path}`
       /* after file is uploaded to IPFS, pass the URL to save it on Polygon */
       createSale(url)
@@ -52,6 +56,7 @@ export default function CreateItem() {
   }
 
   async function createSale(url) {
+    console.log("url",url)
     const web3Modal = new Web3Modal()
     const connection = await web3Modal.connect()
     const provider = new ethers.providers.Web3Provider(connection)    
@@ -59,7 +64,9 @@ export default function CreateItem() {
     
     /* next, create the item */
     let contract = new ethers.Contract(nftaddress, NFT.abi, signer)
+    console.log("contract",contract)
     let transaction = await contract.createToken(url)
+    console.log("transaction",transaction)
     let tx = await transaction.wait()
     let event = tx.events[0]
     let value = event.args[2]
@@ -103,6 +110,7 @@ export default function CreateItem() {
         />
         {
           fileUrl && (
+            // eslint-disable-next-line @next/next/no-img-element
             <img className="rounded mt-4" width="350" src={fileUrl} />
           )
         }
