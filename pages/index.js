@@ -12,7 +12,7 @@ import Market from '../artifacts/contracts/NFTMarket.sol/NFTMarket.json'
 
 let rpcEndpoint = null
 
-  rpcEndpoint = "https://polygon-mumbai.infura.io/v3/86aee73124664f888045b10fe9bdfd14"
+  rpcEndpoint = "https://polygon-mumbai.infura.io/v3/aa6d1078b6dc4925940393d753f141fa"
 
 export default function Home() {
   const [nfts, setNfts] = useState([])

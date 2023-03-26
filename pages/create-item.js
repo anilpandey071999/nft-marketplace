@@ -3,15 +3,26 @@ import { ethers } from 'ethers'
 import { create as ipfsHttpClient } from 'ipfs-http-client'
 import { useRouter } from 'next/router'
 import Web3Modal from 'web3modal'
-
-const client = ipfsHttpClient('https://ipfs.infura.io:5001/api/v0')
+// import * as dotenv from 'dotenv'
+// dotenv.config()
 
 import {
   nftaddress, nftmarketaddress
 } from '../config'
- 
+
 import NFT from '../artifacts/contracts/NFT.sol/NFT.json'
 import Market from '../artifacts/contracts/NFTMarket.sol/NFTMarket.json'
+
+const projectId = process.env.IPFS_PROJECT_ID;
+const projectSecret= process.env.IPFS_PROJECT_SECRET;
+const client = ipfsHttpClient({
+  host: 'ipfs.infura.io',
+  port: 5001,
+  protocol: "https",
+  headers: {
+    Authorization: "Basic " + Buffer.from(projectId + ":"+ projectSecret).toString("base64"),
+  },
+})
 
 export default function CreateItem() {
   const [fileUrl, setFileUrl] = useState(null)
@@ -28,14 +39,14 @@ export default function CreateItem() {
         }
       )
       console.log(added);
-      const url = `https://ipfs.infura.io/ipfs/${added.path}`
+      const url = `https://ipfs.io/ipfs/${added.path}`
       console.log(url);
       setFileUrl(url)
     } catch (error) {
       console.log('Error uploading file: ', error)
-    }  
+    }
   }
-  
+
   async function createMarket() {
     const { name, description, price } = formInput
     if (!name || !description || !price || !fileUrl) return
@@ -45,35 +56,35 @@ export default function CreateItem() {
     })
     try {
       const added = await client.add(data)
-      console.log('data:-',data);
+      console.log('data:-', data);
       console.log(added)
-      const url = `https://ipfs.infura.io/ipfs/${added.path}`
+      const url = `https://ipfs.io/ipfs/${added.path}`
       /* after file is uploaded to IPFS, pass the URL to save it on Polygon */
       createSale(url)
     } catch (error) {
       console.log('Error uploading file: ', error)
-    }  
+    }
   }
 
   async function createSale(url) {
-    console.log("url",url)
+    console.log("url", url)
     const web3Modal = new Web3Modal()
     const connection = await web3Modal.connect()
-    const provider = new ethers.providers.Web3Provider(connection)    
+    const provider = new ethers.providers.Web3Provider(connection)
     const signer = provider.getSigner()
-    
+
     /* next, create the item */
     let contract = new ethers.Contract(nftaddress, NFT.abi, signer)
-    console.log("contract",contract)
+    console.log("contract", contract)
     let transaction = await contract.createToken(url)
-    console.log("transaction",transaction)
+    console.log("transaction", transaction)
     let tx = await transaction.wait()
     let event = tx.events[0]
     let value = event.args[2]
     let tokenId = value.toNumber()
 
     const price = ethers.utils.parseUnits(formInput.price, 'ether')
-  
+
     /* then list the item for sale on the marketplace */
     contract = new ethers.Contract(nftmarketaddress, Market.abi, signer)
     let listingPrice = await contract.getListingPrice()
@@ -88,7 +99,7 @@ export default function CreateItem() {
     <div className="flex justify-center">
       <div className="w-1/2 flex flex-col pb-12">
         <label />
-        <input 
+        <input
           placeholder="Asset Name"
           className="mt-8 border rounded p-4"
           onChange={e => updateFormInput({ ...formInput, name: e.target.value })}

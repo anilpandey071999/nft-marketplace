@@ -13,19 +13,20 @@
     "@openzeppelin/contracts": "^4.2.0",
     "axios": "^0.21.1",
     "chai": "^4.3.4",
+    "dotenv": "^16.0.3",
     "ethereum-waffle": "^3.4.0",
     "ethers": "^5.4.1",
     "hardhat": "^2.4.1",
     "ipfs-http-client": "50.1.2",
-    "next": "11.0.1",
-    "react": "17.0.2",
-    "react-dom": "17.0.2",
+    "next": "^13.2.4",
+    "react": "^18.2.0",
+    "react-dom": "^18.2.0",
     "web3modal": "^1.9.3"
   },
   "devDependencies": {
     "autoprefixer": "^10.2.6",
     "eslint": "7.29.0",
-    "eslint-config-next": "11.0.1",
+    "eslint-config-next": "^13.2.4",
     "postcss": "^8.3.5",
     "tailwindcss": "^2.2.4"
   }
